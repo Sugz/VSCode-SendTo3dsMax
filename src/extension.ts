@@ -20,8 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		if (windows.length > 1){
-			// return (await vscode.window.showQuickPick(windows))
-			const pickedWindow: winapi.Window | undefined = await vscode.window.showQuickPick(windows);
+			const pickedWindow = await vscode.window.showQuickPick(windows, { placeHolder: 'Select a 3dsMax instance' });
 			if (pickedWindow === undefined) {
 				vscode.window.showInformationMessage(`${extensionName}: No instance selected`);
 				return null;

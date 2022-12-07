@@ -1,3 +1,4 @@
+import { QuickPickItem } from 'vscode';
 import * as ffi from 'ffi-napi';
 import * as ref from 'ref-napi';
 
@@ -9,10 +10,15 @@ const voidPtr = ref.refType(ref.types.void);
 const stringPtr = ref.refType(ref.types.CString);
 
 const user32 = ffi.Library('user32.dll', {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     EnumWindows: ['bool', [voidPtr, 'int32']],
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     GetWindowTextA : ['long', ['long', stringPtr, 'long']],
+    // eslint-disable-next-line @typescript-eslint/naming-convention
 	EnumChildWindows: ['bool', ['long', voidPtr, 'int32']],
+    // eslint-disable-next-line @typescript-eslint/naming-convention
 	GetClassNameA : ['long', ['long', stringPtr, 'long']],
+    // eslint-disable-next-line @typescript-eslint/naming-convention
 	SendMessageA: ['int32', [ 'long', 'int32', 'long', stringPtr]]
 });
 
@@ -67,15 +73,10 @@ class ChildWindowEnumerator extends WindowEnumeratorBase {
 
 
 export class Window {
-    label: string | null = null;
     hwnd: number;
 
-    constructor(hwnd: number, label?: string) {
+    constructor(hwnd: number) {
         this.hwnd = hwnd;
-        if(label !== undefined){
-            this.label = label;
-        }
-        
     }
 
     findChild(className: string) : Window | null {
@@ -105,8 +106,18 @@ export class Window {
 }
 
 
-export function getWindowsByTitle(title:string): Window[] | null {
-    const windows: Window[] = [];
+export class WindowItem extends Window implements QuickPickItem {
+    label: string;
+
+    constructor(hwnd: number, label: string) {
+        super(hwnd);
+        this.label = label;
+    }
+}
+
+
+export function getWindowsByTitle(title:string): WindowItem[] | null {
+    const windows: WindowItem[] = [];
     const enumerator = new WindowEnumerator();
     const hwnds = enumerator.call();
     if (hwnds === null) {
@@ -119,7 +130,7 @@ export function getWindowsByTitle(title:string): Window[] | null {
         if (ret > 0) {
             const name = ref.readCString(buf, 0);
             if(name.includes(title)) {
-                windows.push(new Window(hwnd, name));
+                windows.push(new WindowItem(hwnd, name));
             }
         }
     }
