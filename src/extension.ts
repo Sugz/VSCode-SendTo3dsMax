@@ -2,15 +2,34 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as winapi from './winapi';
+import { extname } from 'path';
 
 const extensionName = "Send to 3dsMax";
 const maxTitle = "Autodesk 3ds Max";
 const listenerClassName = "MXS_Scintilla";
+const notSupported = "File type not supported, must be of: *.ms, *.mcr, *.mcr, *.mse, *.py";
+
+enum FileType {
+	maxscript,
+	python,
+	unsupported,
+}
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	let maxWindow: winapi.Window | undefined = undefined;
+
+	function getFileType(file:string): FileType {
+		const ext = extname(file);
+		if ([".ms", ".mcr", ".mse", ".mzp"].includes(ext)) {
+			return FileType.maxscript;
+		}
+		if (ext === ".py") {
+			return FileType.python;
+		}
+		return FileType.unsupported;
+	}
 
 	async function get3dsmaxWindow(): Promise<winapi.Window | null> {
 		const windows = winapi.getWindowsByTitle(maxTitle);
@@ -25,7 +44,6 @@ export function activate(context: vscode.ExtensionContext) {
 				vscode.window.showInformationMessage(`${extensionName}: No instance selected`);
 				return null;
 			}
-			// return (picked_window != undefined) ? picked_window : null;
 
 			vscode.window.showInformationMessage(`${extensionName}: selected "${pickedWindow.label}"`);
 			return pickedWindow;
@@ -82,8 +100,20 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			else
 			{
-				vscode.window.showInformationMessage(`${doc.fileName}`);
-				const cmd = `python.executeFile @"${doc.fileName}"\r\n`;
+				const filetype = getFileType(doc.fileName);
+				let cmd: string;
+				switch (filetype) {
+					case FileType.maxscript:
+						cmd = `fileIn @"${doc.fileName}"\r\n`;
+						break;
+					case FileType.python:
+						cmd = `python.executeFile @"${doc.fileName}"\r\n`;
+						break;
+					case FileType.unsupported:
+					default:
+						vscode.window.showInformationMessage(`${extensionName}: ${notSupported}`);
+						return;
+				  }
 				await send(cmd);
 			}
 		}
