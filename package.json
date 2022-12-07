@@ -10,14 +10,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:send-to-3dsmax.helloWorld"
+    "onCommand:send-to-3dsmax.send",
+    "onCommand:send-to-3dsmax.select"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "send-to-3dsmax.helloWorld",
-        "title": "Hello World"
+        "command": "send-to-3dsmax.send",
+        "title": "Send to 3dsMax"
+      },
+      {
+        "command": "send-to-3dsmax.select",
+        "title": "Select 3dsMax instance"
       }
     ]
   },

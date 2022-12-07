@@ -1,25 +1,97 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as winapi from './winapi';
+
+const extensionName = "Send to 3dsMax";
+const maxTitle = "Autodesk 3ds Max";
+const listenerClassName = "MXS_Scintilla";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	let maxWindow: winapi.Window | undefined = undefined;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "send-to-3dsmax" is now active!');
+	async function get3dsmaxWindow(): Promise<winapi.Window | null> {
+		const windows = winapi.getWindowsByTitle(maxTitle);
+		if (windows === null) {
+			vscode.window.showInformationMessage(`${extensionName}: No instance found`);
+			return null;
+		}
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('send-to-3dsmax.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Send to 3dsMax!');
+		if (windows.length > 1){
+			// return (await vscode.window.showQuickPick(windows))
+			const pickedWindow: winapi.Window | undefined = await vscode.window.showQuickPick(windows);
+			if (pickedWindow === undefined) {
+				vscode.window.showInformationMessage(`${extensionName}: No instance selected`);
+				return null;
+			}
+			// return (picked_window != undefined) ? picked_window : null;
+
+			vscode.window.showInformationMessage(`${extensionName}: selected "${pickedWindow.label}"`);
+			return pickedWindow;
+		}
+
+		return windows[0];
+	}
+
+	async function send(cmd: string) {
+		// make sure that we have a 3ds max instance
+		if (maxWindow === undefined) {
+			const window = await get3dsmaxWindow();
+			if (window === null) {
+				return;
+			}
+
+			maxWindow = window;
+		}
+
+		try {
+			const listener = maxWindow.findChild(listenerClassName);
+
+			// the 3dsmax instance may have been close. Try again and refetch maxWindow
+			if (listener === null) {
+				throw new Error();
+			}
+
+			listener.sendMessage(winapi.WM_SETTEXT, 0, cmd);
+			listener.sendMessage(winapi.WM_CHAR, winapi.VK_RETURN, null);
+		}
+		catch(e) {
+			maxWindow = undefined;
+			await send(cmd);
+			return;
+		}
+	}
+
+	let selectInstanceCommand = vscode.commands.registerCommand('send-to-3dsmax.select', async () => {
+		const window = await get3dsmaxWindow();
+		if (window !== null) {
+			maxWindow = window;
+		}
 	});
 
-	context.subscriptions.push(disposable);
+	let sendCommand = vscode.commands.registerCommand('send-to-3dsmax.send', async () => {
+		if(vscode.window.activeTextEditor!== undefined)
+		{
+			let doc = vscode.window.activeTextEditor.document;
+			if(doc.isUntitled)
+			{
+				const currentText = doc.getText();
+				const languageId = doc.languageId;
+				vscode.window.showInformationMessage(`${languageId}: ${currentText}`);
+			}
+			else
+			{
+				vscode.window.showInformationMessage(`${doc.fileName}`);
+				const cmd = `python.executeFile @"${doc.fileName}"\r\n`;
+				await send(cmd);
+			}
+		}
+	});
+
+	context.subscriptions.push(sendCommand);
+	context.subscriptions.push(selectInstanceCommand);
 }
 
 // This method is called when your extension is deactivated
