@@ -7,7 +7,7 @@ import { extname } from 'path';
 const extensionName = "Send to 3dsMax";
 const maxTitle = "Autodesk 3ds Max";
 const listenerClassName = "MXS_Scintilla";
-const notSupported = "File type not supported, must be of: *.ms, *.mcr, *.mcr, *.mse, *.py";
+const notSupported = "File type not supported, must be of: *.ms, *.mcr, *.mse, *.mzp,*.py";
 
 enum FileType {
 	maxscript,
