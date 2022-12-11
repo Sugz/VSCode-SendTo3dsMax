@@ -4,7 +4,7 @@
   "description": "Execute Maxscript and Python in 3dsMax",
   "publisher": "ClementPlantec",
   "icon": "SendTo3dsMax.png",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/Sugz/VSCode-SendTo3dsMax"
