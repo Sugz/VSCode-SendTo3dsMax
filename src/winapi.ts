@@ -9,9 +9,24 @@ export const VK_RETURN = 0x0D;
 const voidPtr = ref.refType(ref.types.void);
 const stringPtr = ref.refType(ref.types.CString);
 
+
+// declare type _POINTER = Buffer;
+// declare type BigIntStr = bigint | string;
+// declare type PTR_Addr = number | BigIntStr;
+// declare type HANDLE = number | BigIntStr;
+// declare type LONG_PTR = PTR_Addr;
+// declare type BOOL = number;
+// declare type LPARAM = LONG_PTR;
+// declare type LPCTSTR = PUINT16;
+// declare type HWND = HANDLE;
+// declare type INT = number;
+// declare type WNDPROC = Buffer;
+// declare type WNDENUMPROC = WNDPROC;
+// declare type PUINT16 = _POINTER;
+
 const user32 = ffi.Library('user32.dll', {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    EnumWindows: ['bool', [voidPtr, 'int32']],
+    EnumWindows: ['bool', ['pointer', 'int32']],
     // eslint-disable-next-line @typescript-eslint/naming-convention
     GetWindowTextA : ['long', ['long', stringPtr, 'long']],
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -25,9 +40,11 @@ const user32 = ffi.Library('user32.dll', {
 
 function makeLPARAM(param: string | null) {
     if (param !== null) {
-        return ref.allocCString(param);
+        const buf = ref.allocCString(param);
+        return buf.ref();
+        // return ref.allocCString(param);
     }
-    return null;
+    return ref.NULL.ref();
 }
 
 
@@ -88,10 +105,13 @@ export class Window {
 
         const child: Window | null = null;
         for (const hwnd of hwnds) {
-            const buf = Buffer.alloc(255);
-            const ret = user32.GetClassNameA(hwnd, buf, 255);
+            // const buf = Buffer.alloc(255);
+            // buf.type = ref.types.CString;
+            // const ref = buf.ref();
+            const ptr = ref.alloc(stringPtr);
+            const ret = user32.GetClassNameA(hwnd, ptr, 255);
             if (ret > 0) {
-                const childClassName = ref.readCString(buf, 0);
+                const childClassName = ref.readCString(ptr, 0);
                 if(childClassName.includes(className)) {
                     return new Window(hwnd);
                 }

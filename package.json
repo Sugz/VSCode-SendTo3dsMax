@@ -2,12 +2,13 @@
   "name": "send-to-3dsmax",
   "displayName": "Send to 3dsMax",
   "description": "Execute Maxscript and Python in 3dsMax",
+  "publisher": "ClementPlantec",
   "icon": "SendTo3dsMax.png",
   "version": "0.0.1",
   "repository": {
-		"type": "git",
-		"url": "https://github.com/Sugz/VSCode-SendTo3dsMax"
-	},
+    "type": "git",
+    "url": "https://github.com/Sugz/VSCode-SendTo3dsMax"
+  },
   "homepage": "https://github.com/Sugz/VSCode-SendTo3dsMax",
   "engines": {
     "vscode": "^1.73.0"
@@ -16,11 +17,11 @@
     "Other"
   ],
   "keywords": [
-		"MaxScript",
-		"max script",
+    "MaxScript",
+    "max script",
     "3dsMax",
     "3ds max"
-	],
+  ],
   "activationEvents": [
     "onCommand:send-to-3dsmax.send",
     "onCommand:send-to-3dsmax.select"
@@ -47,6 +48,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/ffi-napi": "^4.0.7",
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.0",
     "@types/node": "16.x",
