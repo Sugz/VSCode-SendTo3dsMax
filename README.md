@@ -13,4 +13,5 @@ There is two differents commands:
 - *Select 3dsMax instance:* When using multiple 3dsMax instances, this command allow the user to select the instance to communicate with. User can change the instance by running this command again.
 
 ## Limitations
+
 This extension doesn't support unsaved file for now. It also save the current file before sending it to 3dsMax.
