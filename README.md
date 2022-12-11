@@ -16,7 +16,6 @@ There is two differents commands:
 
 This extension doesn't support unsaved file for now. It also save the current file before sending it to 3dsMax.
 
-
 ## Current Release
 
 [0.1.2] - 2022-11-12
