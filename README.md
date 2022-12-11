@@ -11,3 +11,6 @@ There is two differents commands:
 
 - *Send to 3dsMax:* Execute the current file. If there is multiple 3dsMax instances, the user must first select one.
 - *Select 3dsMax instance:* When using multiple 3dsMax instances, this command allow the user to select the instance to communicate with. User can change the instance by running this command again.
+
+## Limitations
+This extension doesn't support unsaved file for now. It also save the current file before sending it to 3dsMax.
