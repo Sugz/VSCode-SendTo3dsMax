@@ -15,3 +15,10 @@ There is two differents commands:
 ## Limitations
 
 This extension doesn't support unsaved file for now. It also save the current file before sending it to 3dsMax.
+
+
+## Current Release
+
+[0.1.2] - 2022-11-12
+
+[See changelog](https://github.com/Sugz/VSCode-SendTo3dsMax/blob/main/CHANGELOG.md)
