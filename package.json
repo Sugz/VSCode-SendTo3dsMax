@@ -4,7 +4,7 @@
   "description": "Execute Maxscript and Python in 3dsMax",
   "publisher": "ClementPlantec",
   "icon": "SendTo3dsMax.png",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/Sugz/VSCode-SendTo3dsMax"
@@ -37,7 +37,27 @@
         "command": "send-to-3dsmax.select",
         "title": "Select 3dsMax instance"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Send to 3dsMax",
+      "properties": {
+        "send-to-3dsmax.forceLocalOnUnsaved": {
+          "type": "boolean",
+          "default": true,
+          "description": "Encapsulate code with parenthesis when sending unsaved Maxscript."
+        },
+        "send-to-3dsmax.forceLocalOnSelection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Encapsulate code with parenthesis when sending selected Maxscript."
+        },
+        "send-to-3dsmax.useTempForDirtyFile": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use a temporary file instead of saving dirty file on send."
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",
@@ -56,6 +76,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "ffi-napi": "^4.0.3"
+    "ffi-napi": "^4.0.3",
+    "unique-filename": "^3.0.0"
   }
 }
