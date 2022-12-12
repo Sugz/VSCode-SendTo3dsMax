@@ -138,7 +138,7 @@ function activate(context) {
 			// check config and wrap the current text inside parenthesis to make sure everything is local in maxscript if necessary
 			const forceLocalConfigs = getConfigValues(['forceLocalOnSelection', 'forceLocalOnUnsaved']);
 			const forceLocalConfig = range !== undefined ? forceLocalConfigs[0] : forceLocalConfigs[1];
-			data = forceLocalConfig ? `(\n${doc.getText()}\n)` : doc.getText();
+			data = forceLocalConfig ? `(\n${doc.getText(range)}\n)` : doc.getText(range);
 		}
 		else if (isPy) {
 			if(!('py' in temp_files)) {
@@ -149,7 +149,7 @@ function activate(context) {
 				filename = temp_files['py'];
 			}
 
-			data = doc.getText();
+			data = doc.getText(range);
 		}
 		
 		// check if we need to create the temp folder
@@ -159,6 +159,26 @@ function activate(context) {
 
 		return filename;
 	}
+
+	// return a range based on the current selection
+	// starts at the first non whitespace character of the selection first line
+	// ends at the last character of the selection last line
+	function getExtendSelectionRange(editor) {
+		const doc = editor.document;
+		const selection = editor.selection;
+
+		if (selection.isEmpty) {
+			return undefined
+		}
+
+		const selectionLineStart = doc.lineAt(selection.start);
+		const selectionLineEnd = doc.lineAt(selection.end);
+
+		const newRangeStart = new vscode.Position(selectionLineStart.lineNumber, selectionLineStart.firstNonWhitespaceCharacterIndex);
+		const newRangeEnd = new vscode.Position(selectionLineEnd.lineNumber, selectionLineEnd.range.end.character);
+		return new vscode.Range(newRangeStart, newRangeEnd)
+	}
+
 
 	let selectInstanceCommand = vscode.commands.registerCommand('send-to-3dsmax.select', async () => {
 		const hwnd = await get3dsMaxWindowHwnd();
@@ -199,8 +219,39 @@ function activate(context) {
 		}
 	});
 
+	let sendSelectionCommand = vscode.commands.registerCommand('send-to-3dsmax.send-selection', async () => {
+		const editor = vscode.window.activeTextEditor;
+		if(editor !== undefined) {
+			const extendSelection = getConfigValues(['extendSelection'])[0];
+			let range = undefined;
+			if (extendSelection) {
+				range = getExtendSelectionRange(editor);
+			}
+			else {
+				range = editor.selection;
+			}
+
+			if (range === undefined || range.isEmpty) {
+				vscode.window.showInformationMessage(`${extensionName}: There is no active selection`);
+				return;
+			}
+
+			const file = await getTempFile(editor.document, range)
+
+			// get the command to send to the listener. It depends if the file is a maxscript or python file.
+			const cmd = getCmdFromFile(file);
+			if (cmd === null) {
+				vscode.window.showInformationMessage(`${extensionName}: ${notSupported}`);
+				return;
+			}
+
+			await sendCmd(cmd);
+		}
+	});
+
 	context.subscriptions.push(selectInstanceCommand);
 	context.subscriptions.push(sendCommand);
+	context.subscriptions.push(sendSelectionCommand);
 }
 
 // Delete temporary files when the extension is deactivated

@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.1.5] - 2022-12-13
+
+- Added support for send selection
+
 ## [0.1.4] - 2022-12-12
 
 - Added support for unsaved file.

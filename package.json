@@ -4,7 +4,7 @@
   "description": "Execute Maxscript and Python in 3dsMax",
   "publisher": "ClementPlantec",
   "icon": "SendTo3dsMax.png",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/Sugz/VSCode-SendTo3dsMax"
@@ -24,6 +24,7 @@
   ],
   "activationEvents": [
     "onCommand:send-to-3dsmax.send",
+    "onCommand:send-to-3dsmax.send-selection",
     "onCommand:send-to-3dsmax.select"
   ],
   "main": "./src/extension.js",
@@ -32,6 +33,10 @@
       {
         "command": "send-to-3dsmax.send",
         "title": "Send to 3dsMax"
+      },
+      {
+        "command": "send-to-3dsmax.send-selection",
+        "title": "Send selection to 3dsMax"
       },
       {
         "command": "send-to-3dsmax.select",
@@ -55,6 +60,11 @@
           "type": "boolean",
           "default": false,
           "description": "Use a temporary file instead of saving dirty file on send."
+        },
+        "send-to-3dsmax.extendSelection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Extend current selection to the start of the first line and to the end of the last line when sending selected Maxscript."
         }
       }
     }
