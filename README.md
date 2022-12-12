@@ -9,15 +9,15 @@ This extension works by iterating all opened windows and searching for Autodesk 
 
 There is two differents commands:
 
-- *Send to 3dsMax:* Execute the current file. If there is multiple 3dsMax instances, the user must first select one.
-- *Select 3dsMax instance:* When using multiple 3dsMax instances, this command allow the user to select the instance to communicate with. User can change the instance by running this command again.
+- *Send to 3dsMax:* Send the current file to the current 3dsMax instance. User will have to pick an instance if none have been selected yet and multiple instance are running.
+- *Select 3dsMax instance:* When multiple 3dsMax instances are running, this command allow the user to select one. User can change the instance by running this command again.
 
 ## Limitations
 
-This extension doesn't support unsaved file for now. It also save the current file before sending it to 3dsMax.
+- Current file is save before it is send to 3dsMax.
+- Unsaved files are unsuported for now.
+- Send selection is unsuported for now.
 
 ## Current Release
 
-[0.1.2] - 2022-11-12
-
-[See changelog](https://github.com/Sugz/VSCode-SendTo3dsMax/blob/main/CHANGELOG.md)
+[0.1.3] - 2022-12-12 - [See changelog](https://github.com/Sugz/VSCode-SendTo3dsMax/blob/main/CHANGELOG.md)
