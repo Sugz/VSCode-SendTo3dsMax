@@ -208,6 +208,11 @@ function activate(context) {
 				}
 			}
 
+			// use current file
+			else {
+				file = doc.fileName;
+			}
+
 			// get the command to send to the listener. It depends if the file is a maxscript or python file.
 			const cmd = getCmdFromFile(file);
 			if (cmd === null) {
